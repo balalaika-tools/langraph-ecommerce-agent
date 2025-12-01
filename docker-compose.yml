@@ -1,0 +1,14 @@
+services:
+  analyst-9000:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: analyst-9000
+    image: analyst-9000-image:latest
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./secrets/credentials.json:/app/secrets/credentials.json:ro
+    command: gunicorn -k uvicorn.workers.UvicornWorker -w 1 -b 0.0.0.0:8000 --access-logfile - analyst_9000.main:app

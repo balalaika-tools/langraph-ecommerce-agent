@@ -1,0 +1,10 @@
+services:
+  analyst-9000:
+    image: analyst-9000-image:latest
+    env_file:
+      - .env
+    volumes:
+      - ./credentials.json:/secrets/credentials.json:ro
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
+    command: python analyst_9000.main:app
