@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Analyst-9000 - Data Analysis Agent</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
   <style>
     * {
       margin: 0;
@@ -137,6 +138,74 @@
       pointer-events: none;
     }
 
+    .model-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .model-label {
+      font-size: 11px;
+      opacity: 0.8;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .model-selector {
+      display: flex;
+      gap: 4px;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 4px;
+      border-radius: 8px;
+    }
+
+    .model-btn {
+      padding: 6px 12px;
+      border: none;
+      background: transparent;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .model-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .model-btn.active {
+      background: white;
+      color: #667eea;
+    }
+
+    .model-btn[data-model="google_genai:gemini-2.5-flash"]:hover::after {
+      content: "Fast, efficient model for quick responses";
+    }
+
+    .model-btn[data-model="google_genai:gemini-2.5-pro"]:hover::after {
+      content: "More powerful model for complex analysis";
+    }
+
+    .model-btn:hover::after {
+      position: absolute;
+      bottom: 100%;
+      right: 0;
+      margin-bottom: 8px;
+      padding: 6px 10px;
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      border-radius: 6px;
+      font-size: 11px;
+      white-space: nowrap;
+      z-index: 1000;
+      pointer-events: none;
+    }
+
     .new-session-btn {
       padding: 8px 16px;
       border: 2px solid white;
@@ -226,6 +295,105 @@
       color: #212529;
       border: 1px solid #e9ecef;
       border-bottom-left-radius: 4px;
+    }
+
+    /* Markdown styling */
+    .message-content h1,
+    .message-content h2,
+    .message-content h3 {
+      margin-top: 16px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .message-content h1 {
+      font-size: 1.5em;
+    }
+
+    .message-content h2 {
+      font-size: 1.3em;
+    }
+
+    .message-content h3 {
+      font-size: 1.1em;
+    }
+
+    .message-content p {
+      margin: 8px 0;
+    }
+
+    .message-content ul,
+    .message-content ol {
+      margin: 8px 0;
+      padding-left: 24px;
+    }
+
+    .message-content li {
+      margin: 4px 0;
+    }
+
+    .message-content code {
+      background: #f1f3f5;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 0.9em;
+    }
+
+    .message-content pre {
+      background: #f1f3f5;
+      padding: 12px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 12px 0;
+    }
+
+    .message-content pre code {
+      background: transparent;
+      padding: 0;
+    }
+
+    .message-content blockquote {
+      border-left: 4px solid #667eea;
+      padding-left: 16px;
+      margin: 12px 0;
+      color: #6c757d;
+      font-style: italic;
+    }
+
+    .message-content table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 12px 0;
+    }
+
+    .message-content table th,
+    .message-content table td {
+      border: 1px solid #e9ecef;
+      padding: 8px 12px;
+      text-align: left;
+    }
+
+    .message-content table th {
+      background: #f8f9fa;
+      font-weight: 600;
+    }
+
+    .message-content a {
+      color: #667eea;
+      text-decoration: none;
+    }
+
+    .message-content a:hover {
+      text-decoration: underline;
+    }
+
+    .message-content strong {
+      font-weight: 600;
+    }
+
+    .message-content em {
+      font-style: italic;
     }
 
     .input-container {
@@ -362,6 +530,13 @@
         <div class="session-title" id="sessionTitle">New Session</div>
       </div>
       <div class="header-right">
+        <div class="model-wrapper">
+          <div class="model-label">Model</div>
+          <div class="model-selector">
+            <button class="model-btn active" data-model="google_genai:gemini-2.5-flash" title="Fast, efficient model for quick responses">Flash</button>
+            <button class="model-btn" data-model="google_genai:gemini-2.5-pro" title="More powerful model for complex analysis">Pro</button>
+          </div>
+        </div>
         <div class="reasoning-wrapper">
           <div class="reasoning-label">Reasoning Budget</div>
           <div class="reasoning-selector">
@@ -397,6 +572,7 @@
   <script>
     // Session management
     let currentSessionId = generateSessionId();
+    let currentModel = 'google_genai:gemini-2.5-flash';
     let currentReasoningBudget = 'low';
     let isStreaming = false;
 
@@ -422,6 +598,16 @@
     const sessionTitle = document.getElementById('sessionTitle');
     const emptyState = document.getElementById('emptyState');
     const reasoningBtns = document.querySelectorAll('.reasoning-btn');
+    const modelBtns = document.querySelectorAll('.model-btn');
+
+    // Model selector
+    modelBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        modelBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentModel = btn.dataset.model;
+      });
+    });
 
     // Reasoning budget selector
     reasoningBtns.forEach(btn => {
@@ -480,6 +666,7 @@
           body: JSON.stringify({
             prompt: msg,
             id: currentSessionId,
+            model: currentModel,
             reasoning_budget: currentReasoningBudget
           })
         });
@@ -570,7 +757,13 @@
       
       const content = document.createElement('div');
       content.className = 'message-content';
-      content.textContent = text;
+      
+      // Render markdown for bot messages, plain text for user messages
+      if (role === 'bot' && typeof marked !== 'undefined') {
+        content.innerHTML = marked.parse(text);
+      } else {
+        content.textContent = text;
+      }
       
       messageEl.appendChild(avatar);
       messageEl.appendChild(content);
@@ -599,7 +792,12 @@
 
     function updateBotMessage(messageEl, text) {
       const content = messageEl.querySelector('.message-content');
-      content.textContent = text;
+      // Render markdown if marked.js is available
+      if (typeof marked !== 'undefined') {
+        content.innerHTML = marked.parse(text);
+      } else {
+        content.textContent = text;
+      }
       scrollToBottom();
     }
 

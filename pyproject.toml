@@ -10,6 +10,7 @@ dependencies = [
     "gunicorn>=23.0.0",
     "httpx>=0.28.1",
     "langchain>=1.1.0",
+    "langchain-google-genai>=3.2.0",
     "langgraph>=1.0.4",
     "orjson>=3.11.4",
     "pandas>=2.3.3",
@@ -31,5 +32,5 @@ build-backend = "hatchling.build"
 packages = ["src/analyst_9000"]
 
 
-#[project.scripts]
-#smith = "xgs_smith.main:run_app_locally"
+[project.scripts]
+analy= "analyst_9000.main:run_app_locally"

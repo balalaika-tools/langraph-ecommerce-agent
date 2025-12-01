@@ -21,3 +21,7 @@ THINKING_BUDGET_MAP = {
 }
 
 
+# ============================================================
+# SQL Generator Constants
+# ============================================================
+MAX_ITERATIONS = 3 # Maximum number of iterations to try to generate a valid SQL query

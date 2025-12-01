@@ -13,7 +13,7 @@ class Settings(BaseSettings):
 
     # General
     webhook_uri: Optional[AnyHttpUrl] = Field(None, description="The URI of the webhook to send error logs to.", alias="WEBHOOK_URI")
-    #gemini_api_key: SecretStr = Field(..., description="The API key for the Gemini API.", alias="GEMINI_API_KEY")
+    gemini_api_key: SecretStr = Field(..., description="The API key for the Gemini API.", alias="GEMINI_API_KEY")
 
 
     # BigQuery Settings 
