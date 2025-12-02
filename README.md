@@ -77,6 +77,17 @@ analyst-9000/
 
 ---
 
+### Step 0: Clone the Repository
+
+```bash
+git clone <repository-url>
+cd langraph-ecommerce-agent
+```
+
+> 📝 All subsequent commands should be run from the root folder of the repository.
+
+---
+
 ### Step 1: Create Environment File
 
 Create a `.env` file in the project root with at least your Gemini API key:
