@@ -106,7 +106,7 @@ async for event in graph.stream(...):
 response = await model.ainvoke([system_prompt] + messages, config=config)
 ```
 
-> **Note**: BigQuery client is synchronous (no native async support), but operations are I/O-bound and run in a thread pool automatically.
+> **Note**: BigQuery client is synchronous (no native async support).
 
 ### 2. Response Streaming
 
