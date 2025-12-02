@@ -1,6 +1,5 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
-from fastapi.middleware.cors import CORSMiddleware
 from typing import AsyncGenerator
 from contextlib import asynccontextmanager
 from fastapi.responses import ORJSONResponse
@@ -28,14 +27,6 @@ def _setup_exception_handlers(app: FastAPI) -> None:
 
 def _setup_middleware(app: FastAPI) -> None:
     """Setup middleware for the FastAPI application."""
-    # CORS middleware for frontend
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],  # In production, restrict this
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
     # Correlation ID middleware
     app.add_middleware(CorrelationIdMiddleware)
 
