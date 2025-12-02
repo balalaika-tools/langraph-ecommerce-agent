@@ -99,7 +99,7 @@ class Settings(BaseSettings):
         )
 
     @computed_field
-    @property
+    @cached_property
     def effective_session_store_url(self) -> str:
         """Get the effective session store URL, defaulting to SQLite for local dev."""
         if self.session_store_url:
