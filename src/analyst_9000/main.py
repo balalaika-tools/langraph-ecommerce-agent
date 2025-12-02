@@ -7,7 +7,7 @@ import sys
 
 
 def run_app():
-    """Run the FastAPI application on Azure."""
+    """Run the FastAPI application for production."""
     return create_app()
 
 
