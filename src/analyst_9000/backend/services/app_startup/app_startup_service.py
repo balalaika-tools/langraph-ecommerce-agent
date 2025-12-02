@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from typing import AsyncGenerator
 from contextlib import asynccontextmanager
 from fastapi.responses import ORJSONResponse
@@ -26,17 +27,27 @@ def _setup_exception_handlers(app: FastAPI) -> None:
 
 
 def _setup_middleware(app: FastAPI) -> None:
-    '''Setup middleware for the FastAPI application.'''
+    """Setup middleware for the FastAPI application."""
+    # CORS middleware for frontend
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],  # In production, restrict this
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+    # Correlation ID middleware
     app.add_middleware(CorrelationIdMiddleware)
 
 
 def _setup_routers(app: FastAPI) -> None:
-    '''Setup routers for the FastAPI application.'''
+    """Setup routers for the FastAPI application."""
     app.include_router(chatbot.router)
     app.include_router(health.router)
 
+
 def _setup_static_files(app: FastAPI) -> None:
-    '''Setup static files for the FastAPI application.'''
+    """Setup static files for the FastAPI application."""
     static_dir = Path(__file__).resolve().parents[3] / "frontend"
     app.mount("/", StaticFiles(directory=str(static_dir), html=True), name="frontend")
 
@@ -44,19 +55,39 @@ def _setup_static_files(app: FastAPI) -> None:
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Lifespan context manager for FastAPI startup and shutdown."""
+    from analyst_9000.backend.core.config import get_settings
+    
     # ==================== STARTUP ====================
     logger.info("🚀 Application startup...")
+    settings = get_settings()
+    
     try:
-        # Add any startup logic here (e.g., connect to database, initialize services)
+        # Initialize session store (PostgreSQL/SQLite)
+        logger.info("📦 Initializing session store...")
+        await settings.setup_session_store()
+        
+        # Initialize model registry
+        logger.info("🤖 Initializing model registry...")
+        await settings.setup_model_registry()
+        
+        # Initialize graph
+        logger.info("📊 Initializing analyst graph...")
+        await settings.setup_analyst_graph()
+        
         logger.info("✅ Application startup completed")
         yield
+        
     except Exception as e:
         logger.exception(f"❌ Error during application startup: {e}")
         raise
+        
     finally:
         # ==================== SHUTDOWN ====================
         logger.info("🛑 Application shutdown...")
-        # Add any cleanup logic here 
+        
+        # Close session store connections
+        await settings.close_session_store()
+        
         logger.info("✅ Application shutdown completed")
 
 
@@ -65,6 +96,9 @@ def create_app() -> FastAPI:
     try:
         # Create FastAPI app with lifespan
         app = FastAPI(
+            title="Analyst-9000",
+            description="Data Analysis Agent for TheLook eCommerce",
+            version="1.0.0",
             lifespan=lifespan,
             default_response_class=ORJSONResponse,
         )

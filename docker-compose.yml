@@ -1,4 +1,20 @@
 services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: analyst-9000-db
+    environment:
+      POSTGRES_USER: analyst
+      POSTGRES_PASSWORD: analyst9000
+      POSTGRES_DB: analyst_9000
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U analyst -d analyst_9000"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
   analyst-9000:
     build:
       context: .
@@ -7,8 +23,17 @@ services:
     image: analyst-9000-image:latest
     env_file:
       - .env
+    environment:
+      DATABASE_URL: postgresql://analyst:analyst9000@postgres:5432/analyst_9000
     ports:
-      - "8000:8000"
+      - "6757:8000"
     volumes:
       - ./secrets/credentials.json:/app/secrets/credentials.json:ro
-    command: gunicorn -k uvicorn.workers.UvicornWorker -w 1 -b 0.0.0.0:8000 --access-logfile - analyst_9000.main:app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: gunicorn -k uvicorn.workers.UvicornWorker -w 1 -b 0.0.0.0:8000 --access-logfile - analyst_9000.main:run_app
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

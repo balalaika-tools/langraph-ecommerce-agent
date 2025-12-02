@@ -24,4 +24,18 @@ THINKING_BUDGET_MAP = {
 # ============================================================
 # SQL Generator Constants
 # ============================================================
-MAX_ITERATIONS = 3 # Maximum number of iterations to try to generate a valid SQL query
+MAX_ITERATIONS = 3  # Maximum number of iterations to try to generate a valid SQL query
+
+
+# ============================================================
+# Memory Management Constants
+# ============================================================
+MAX_HISTORY_MESSAGES = 30  # Maximum number of messages to keep in effective chat history
+
+
+# ============================================================
+# Session Store Constants (PostgreSQL/SQLite)
+# ============================================================
+DEFAULT_SQLITE_PATH = "data/analyst_9000.db"
+DB_POOL_SIZE = 5
+DB_MAX_OVERFLOW = 10

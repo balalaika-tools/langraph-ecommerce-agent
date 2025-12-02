@@ -8,9 +8,9 @@ logger = get_logger(ANALYST_LOGGER)
 SQL_QUERIES_DIR = Path(__file__).parent / "sql_queries"
 
 
-def utcnow_iso() -> str:
-    """ISO8601 UTC format with timezone (e.g. 2025-11-12T12:00:00+00:00)."""
-    return datetime.now(timezone.utc).isoformat()
+def utcnow() -> datetime:
+    """Returns current UTC datetime with timezone info."""
+    return datetime.now(timezone.utc)
 
 
 

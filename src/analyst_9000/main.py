@@ -6,7 +6,7 @@ import uvicorn
 import sys
 
 
-def run_app_on_azure():
+def run_app():
     """Run the FastAPI application on Azure."""
     return create_app()
 

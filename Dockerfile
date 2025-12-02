@@ -47,4 +47,4 @@ USER app
 EXPOSE 8000
 
 # Default command
-CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "-w", "1", "-b", "0.0.0.0:8000", "--access-logfile", "-", "analyst_9000.main:app"]
+CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "-w", "1", "-b", "0.0.0.0:8000", "--access-logfile", "-", "analyst_9000.main:run_app"]

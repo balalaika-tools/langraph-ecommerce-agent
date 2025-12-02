@@ -1,5 +1,5 @@
 from typing import List
-from analyst_9000.backend.helpers.utils import utcnow_iso
+from analyst_9000.backend.helpers.utils import utcnow
 
 def format_attempt_history(attempts: List[dict]) -> str:
     """
@@ -46,7 +46,7 @@ Your goal is to answer the user's question by generating executable GoogleSQL (B
 ### 2. Database Configuration
 * **Project/Dataset Path:** You MUST explicitly reference tables using this path: `{project_id}`.
     * *Example:* `FROM `{project_id}.orders`` (Use backticks).
-* **Current Date:** {utcnow_iso}
+* **Current Date:** {utcnow().isoformat()}
 
 ### 3. Schema Context
 Here are the tables and columns available to you:
