@@ -10,6 +10,7 @@ import httpx
 import sys
 from typing import Optional, Union, ClassVar
 
+
 class CorrelationCtx:
     _cid: ClassVar[ContextVar[Optional[str]]] = ContextVar("correlation_id", default=None)
 
