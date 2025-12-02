@@ -132,7 +132,7 @@ LANGSMITH_ENDPOINT=https://api.smith.langchain.com
 LANGSMITH_API_KEY=your_langsmith_api_key
 LANGSMITH_PROJECT=your-project-name
 ```
-> 💡 Get your API key from [Google AI Studio](https://smith.langchain.com)
+> 💡 Get your API key from [LangSmith](https://smith.langchain.com)
 ---
 
 ## 🖥️ Deployment Options
